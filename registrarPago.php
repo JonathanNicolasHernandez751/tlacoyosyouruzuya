@@ -36,6 +36,7 @@ if (isset($_POST['guardar_pago'])) {
     $metodo_pago = $_POST['metodo_pago'];
     $monto = $_POST['monto'];
 
+
     // Verificar que el pedido existe y obtener el total
     $stmt = $conn->prepare("SELECT total FROM Pedido WHERE id_pedido = ?");
     $stmt->bind_param("i", $id_pedido);
@@ -70,6 +71,8 @@ if (isset($_POST['guardar_pago'])) {
     } else {
         echo "Error: " . $stmt->error;
     }
+
+
     $stmt->close();
 }
 ?>
