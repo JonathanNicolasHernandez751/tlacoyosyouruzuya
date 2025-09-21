@@ -1,95 +1,109 @@
 
+
 <?php include("db.php"); ?>
 
-<h2>🔎 Buscar, Editar y Desactivar/Activar pagos</h2>
+<h2>💰 Buscar, Agregar, Editar y Eliminar Pagos</h2>
 
+<!-- FORMULARIO PARA AGREGAR NUEVO PAGO -->
+<form method="POST">
+    <h3>➕ Agregar Pago</h3>
+    Pedido:
+    <select name="id_pedido" required>
+        <option value="">-- Selecciona Pedido --</option>
+        <?php
+        $pedidos = $conn->query("SELECT id_pedido FROM Pedido ORDER BY id_pedido DESC");
+        while ($p = $pedidos->fetch_assoc()) {
+            echo "<option value='{$p['id_pedido']}'>{$p['id_pedido']}</option>";
+        }
+        ?>
+    </select>
+    Método: <input type="text" name="metodo_pago" required>
+    Monto: <input type="number" step="0.01" name="monto" required>
+    Fecha: <input type="date" name="fecha_pago" value="<?= date('Y-m-d') ?>" required>
+    <button type="submit" name="agregar_pago">💾 Guardar</button>
+</form>
+
+<hr>
+
+<!-- FORMULARIO DE BÚSQUEDA -->
 <form method="GET">
-    Nombre: <input type="text" name="id_pago" value="<?= isset($_GET['id_pago']) ? $_GET['id_pago'] : '' ?>">
-
-
-    Mz: <input type="text" name="id_cliente" value="<?= isset($_GET['id_cliente']) ? $_GET['id_cliente'] : '' ?>" size="4">
-    Lt: <input type="text" name="fecha" value="<?= isset($_GET['fecha_pago']) ? $_GET['fecha_pago'] : '' ?>" size="4">
-
-    <button type="submit">Buscar</button>
+    Pedido: <input type="text" name="id_pedido" value="<?= $_GET['id_pedido'] ?? '' ?>" size="4">
+    Método: <input type="text" name="metodo_pago" value="<?= $_GET['metodo_pago'] ?? '' ?>">
+    Mostrar eliminados:
+    <input type="checkbox" name="ver_eliminados" value="1" <?= isset($_GET['ver_eliminados']) ? "checked" : "" ?>>
+    <button type="submit">🔎 Buscar</button>
 </form>
 
 <hr>
 
 <?php
-// --- Desactivar cliente (Soft Delete) ---
-if (isset($_GET['desactivar_cliente'])) {
-    $id = $_GET['desactivar_cliente'];
-    $stmt = $conn->prepare("UPDATE cliente SET activo=0 WHERE id_cliente=?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    echo "🟡 Cliente desactivado.<br><br>";
-    $stmt->close();
-}
-
-// --- Reactivar cliente ---
-if (isset($_GET['activar_cliente'])) {
-    $id = $_GET['activar_cliente'];
-    $stmt = $conn->prepare("UPDATE cliente SET activo=1 WHERE id_cliente=?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    echo "🟢 Cliente reactivado.<br><br>";
-    $stmt->close();
-}
-
-// --- Actualizar cliente ---
-if (isset($_POST['ac'])) {
-    $stmt = $conn->prepare("UPDATE  SET nombre=?, telefono=?, direccion=?, manzana=?, lote=?, email=?, id_ciudad=? WHERE id_cliente=?");
-    $stmt->bind_param("ssssssii",
-        $_POST['nombre'],
-        $_POST['telefono'],
-        $_POST['direccion'],
-        $_POST['manzana'],
-        $_POST['lote'],
-        $_POST['email'],
-        $_POST['id_ciudad'],
-        $_POST['id_cliente']
-    );
-
+// --- AGREGAR NUEVO PAGO ---
+if (isset($_POST['agregar_pago'])) {
+    $stmt = $conn->prepare("INSERT INTO Pago (id_pedido, metodo_pago, monto, fecha_pago, activo)
+                            VALUES (?, ?, ?, ?, 1)");
+    $stmt->bind_param("isds", $_POST['id_pedido'], $_POST['metodo_pago'], $_POST['monto'], $_POST['fecha_pago']);
     if ($stmt->execute()) {
-        echo "✅ Cliente actualizado.<br><br>";
+        echo "✅ Pago agregado correctamente.<br><br>";
     } else {
         echo "❌ Error: " . $stmt->error . "<br><br>";
     }
     $stmt->close();
 }
 
-// --- Construir consulta ---
-$query = "SELECT c.id_cliente, c.nombre, c.telefono, c.direccion, c.manzana, c.lote, c.email, c.id_ciudad, c.activo, ci.nombre_ciudad
-          FROM cliente c
-          LEFT JOIN ciudad ci ON c.id_ciudad = ci.id_ciudad
-          WHERE 1=1";
+// --- EDITAR PAGO ---
+if (isset($_POST['actualizar_pago'])) {
+    $stmt = $conn->prepare("UPDATE Pago SET id_pedido=?, metodo_pago=?, monto=?, fecha_pago=? WHERE id_pago=?");
+    $stmt->bind_param("isdsi", $_POST['id_pedido'], $_POST['metodo_pago'], $_POST['monto'], $_POST['fecha_pago'], $_POST['id_pago']);
+    if ($stmt->execute()) {
+        echo "✅ Pago actualizado.<br><br>";
+    } else {
+        echo "❌ Error: " . $stmt->error . "<br><br>";
+    }
+    $stmt->close();
+}
 
+// --- ELIMINAR (SOFT DELETE) ---
+if (isset($_GET['eliminar_pago'])) {
+    $id = $_GET['eliminar_pago'];
+    $stmt = $conn->prepare("UPDATE Pago SET activo=0 WHERE id_pago=?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    echo "🗑️ Pago eliminado.<br><br>";
+    $stmt->close();
+}
+
+// --- REACTIVAR ---
+if (isset($_GET['activar_pago'])) {
+    $id = $_GET['activar_pago'];
+    $stmt = $conn->prepare("UPDATE Pago SET activo=1 WHERE id_pago=?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    echo "♻️ Pago reactivado.<br><br>";
+    $stmt->close();
+}
+
+// --- CONSULTA DE PAGOS ---
+$query = "SELECT * FROM Pago WHERE 1=1";
 $params = [];
 $types = "";
 
-if (!empty($_GET['nombre'])) {
-    $query .= " AND c.nombre LIKE ?";
-    $params[] = "%" . $_GET['nombre'] . "%";
-    $types .= "s";
-}
-if (!empty($_GET['id_ciudad'])) {
-    $query .= " AND c.id_ciudad = ?";
-    $params[] = $_GET['id_ciudad'];
+if (!empty($_GET['id_pedido'])) {
+    $query .= " AND id_pedido = ?";
+    $params[] = $_GET['id_pedido'];
     $types .= "i";
 }
-if (!empty($_GET['manzana'])) {
-    $query .= " AND c.manzana LIKE ?";
-    $params[] = $_GET['manzana'];
+
+if (!empty($_GET['metodo_pago'])) {
+    $query .= " AND metodo_pago LIKE ?";
+    $params[] = "%" . $_GET['metodo_pago'] . "%";
     $types .= "s";
 }
-if (!empty($_GET['lote'])) {
-    $query .= " AND c.lote LIKE ?";
-    $params[] = $_GET['lote'];
-    $types .= "s";
+
+if (!isset($_GET['ver_eliminados'])) {
+    $query .= " AND activo=1";
 }
-if (!isset($_GET['ver_inactivos'])) {
-    $query .= " AND c.activo = 1";
-}
+
+$query .= " ORDER BY fecha_pago DESC";
 
 $stmt = $conn->prepare($query);
 if (!empty($params)) {
@@ -98,52 +112,39 @@ if (!empty($params)) {
 $stmt->execute();
 $result = $stmt->get_result();
 
-// --- Mostrar tabla ---
+// --- MOSTRAR TABLA ---
 echo "<table border='1' cellpadding='5'>
 <tr>
-<th>Nombre</th><th>Teléfono</th><th>Dirección</th><th>Mz</th><th>Lt</th><th>Ciudad</th><th>Email</th><th>Estado</th><th>Acciones</th>
+<th>ID</th><th>Pedido</th><th>Método</th><th>Monto</th><th>Fecha</th><th>Estado</th><th>Acciones</th>
 </tr>";
 
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $estado = $row['activo'] ? "✅ Activo" : "🚫 Inactivo";
+        $estado = $row['activo'] ? "✅ Activo" : "🚫 Eliminado";
+
 
 echo "<tr style='" . ($row['activo'] ? "" : "background:#f8d7da;") . "'>
         <form method='POST'>
-            <td><input type='text' name='nombre' value='{$row['nombre']}' required></td>
-            <td><input type='text' name='telefono' value='{$row['telefono']}'></td>
-            <td><input type='text' name='direccion' value='{$row['direccion']}'></td>
-            <td><input type='text' name='mz' value='{$row['manzana']}' size='3'></td>
-            <td><input type='text' name='lt' value='{$row['lote']}' size='3'></td>
-            <td>
-                <select name='id_ciudad'>";
-                    $ciudades = $conn->query("SELECT id_ciudad, nombre_ciudad FROM ciudad ORDER BY nombre_ciudad");
-                    while ($c = $ciudades->fetch_assoc()) {
-                        $selected = ($c['id_ciudad'] == $row['id_ciudad']) ? "selected" : "";
-                        echo "<option value='{$c['id_ciudad']}' $selected>{$c['nombre_ciudad']}</option>";
-                    }
-        echo "</select>
-            </td>
-            <td><input type='email' name='email' value='{$row['email']}'></td>
+            <td>{$row['id_pago']}</td>
+            <td><input type='number' name='id_pedido' value='{$row['id_pedido']}' required></td>
+            <td><input type='text' name='metodo_pago' value='{$row['metodo_pago']}' required></td>
+            <td><input type='number' step='0.01' name='monto' value='{$row['monto']}' required></td>
+            <td><input type='date' name='fecha_pago' value='{$row['fecha_pago']}' required></td>
             <td>$estado</td>
             <td>
-                <input type='hidden' name='id_cliente' value='{$row['id_cliente']}'>
-                <button type='submit' name='actualizar_cliente'>💾 Guardar</button>
+                <input type='hidden' name='id_pago' value='{$row['id_pago']}'>
+                <button type='submit' name='actualizar_pago'>💾 Guardar</button>
                 " . ($row['activo']
-                    ? "<a href='editarPago.php?desactivar_cliente={$row['id_cliente']}' onclick=\"return confirm('⚠️ ¿Desactivar a {$row['nombre']}?');\">🚫 Desactivar</a>"
-                    : "<a href='editarPago.php?activar_cliente={$row['id_cliente']}'>🔄 Activar</a>"
+                    ? "<a href='panel_pagos.php?eliminar_pago={$row['id_pago']}' onclick=\"return confirm('¿Eliminar este pago?');\">🗑️ Eliminar</a>"
+                    : "<a href='panel_pagos.php?activar_pago={$row['id_pago']}'>♻️ Reactivar</a>"
                 ) . "
             </td>
         </form></tr>";
     }
 } else {
-    echo "<tr><td colspan='9'>⚠️ No se encontraron clientes.</td></tr>";
+    echo "<tr><td colspan='7'>⚠️ No se encontraron pagos.</td></tr>";
 }
 
 echo "</table>";
 $stmt->close();
-?>
-
-
-
 ?>
