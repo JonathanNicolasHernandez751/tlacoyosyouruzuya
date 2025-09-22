@@ -1,10 +1,12 @@
-<?php include("db.php"); ?>
+<?php include "db.php"; ?>
 < html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Sistema de Ventas - Tlacoyos</title>
+    <link rel="stylesheet" href="css/menu_despegable.css">
     <style>
+
         body {
             font-family: Arial, sans-serif;
             margin: 0; padding: 0;
@@ -51,14 +53,24 @@
 </header>
 
 <nav>
-    <a href="Cliente.php" target="contenido">Clientes</a>
-    <a href="producto.php" target="contenido">Productos</a>
+   <ul class="nav">
+   <li>  <a href="Cliente.php" target="contenido">Clientes</a></li>
+    <li>
     <a href="registrarPedido.php" target="contenido">Pedidos</a>
-    <a href="agregarProductoApedido.php" target="contenido">Detalles de Pedido</a>
-    <a href="registrarPago.php" target="contenido">Pagos</a>
-    <a href="panelDePedidos.php" target="contenido">Panel</a>
-    <a href="editarPago.php" target="contenido">Panel</a>
-    <a href="editarPedido.php" target="contenido">Panel</a>
+    </li>
+     <li>
+    <a href="agregarProductoApedido.php" target="contenido">Detalles de Pedido</a></li>
+     <li>
+    <a href="registrarPago.php" target="contenido">Pagos</a></li>
+     <li>
+    <a>otros</a>
+<ul>
+  <li> <a href="panelDePedidos.php" target="contenido">Panel</a></li>
+  <li>  <a href="editarPago.php" target="contenido">Panel</a></li>
+<li><a href="editarPedido.php" target="contenido">Panel</a></li>
+    <li> <a href="producto.php" target="contenido">Productos</a></li>
+         </ul>
+     </ul>
 </nav>
 
 <div class="content">
