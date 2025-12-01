@@ -69,6 +69,8 @@
   <li>  <a href="editarPago.php" target="contenido">Panel</a></li>
 <li><a href="editarPedido.php" target="contenido">Panel</a></li>
     <li> <a href="producto.php" target="contenido">Productos</a></li>
+
+                 <li> <a href="corrreelectronico/generadorCorreos2.php" target="contenido">correo electronico2</a></li>
          </ul>
      </ul>
 </nav>

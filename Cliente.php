@@ -18,6 +18,8 @@
         ?>
     </select><br>
     Email: <input type="email" name="email"><br>
+
+
     <button type="submit" name="guardar_cliente">Guardar</button>
 </form>
 
@@ -31,6 +33,7 @@ if (isset($_POST['guardar_cliente'])) {
         echo "✅ Cliente registrado correctamente";
     } else {
         echo "❌ Error: " . $stmt->error;
+    }
     }
     $stmt->close();
 }

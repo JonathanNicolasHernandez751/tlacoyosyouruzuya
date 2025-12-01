@@ -65,7 +65,7 @@ if (isset($_POST['actualizar_pago'])) {
 // --- ELIMINAR (SOFT DELETE) ---
 if (isset($_GET['eliminar_pago'])) {
     $id = $_GET['eliminar_pago'];
-    $stmt = $conn->prepare("UPDATE Pago SET activo=0 WHERE id_pago=?");
+    $stmt = $conn->prepare("UPDATE pago SET activo=0 WHERE id_pago=?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     echo "🗑️ Pago eliminado.<br><br>";
