@@ -1,7 +1,14 @@
 <?php include("db.php"); ?>
+<?php
+require_once 'corrreelectronico/vendor/autoload.php';
+$faker = Faker\Factory::create('es_ES');
+$emailInicial = $faker->email();
+?>
 
 <h2>Registrar Cliente</h2>
-<form method="POST">
+<div id="mensaje" style="margin-bottom: 20px; font-weight: bold;"></div>
+
+<form id="registroForm">
     Nombre: <input type="text" name="nombre" required><br>
     Teléfono: <input type="text" name="telefono"><br>
     Dirección: <input type="text" name="direccion"><br>
@@ -17,24 +24,50 @@
         }
         ?>
     </select><br>
-    Email: <input type="email" name="email"><br>
+    
+    Email: 
+    <input type="email" name="email" id="emailInput" value="<?php echo $emailInicial; ?>">
+    <button type="button" id="btnRegenerar">Regenerar Email</button>
+    <br><br>
 
-
-    <button type="submit" name="guardar_cliente">Guardar</button>
+    <button type="submit">Guardar Cliente</button>
 </form>
 
-<?php
+<script>
+// 1. Lógica para Regenerar Email
+document.getElementById('btnRegenerar').addEventListener('click', function() {
+    fetch('get_email.php')
+        .then(response => response.text())
+        .then(nuevoEmail => {
+            document.getElementById('emailInput').value = nuevoEmail;
+        });
+});
 
-if (isset($_POST['guardar_cliente'])) {
-    $stmt = $conn->prepare("INSERT INTO Cliente (nombre, telefono, direccion, manzana, lote, email, id_ciudad) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssssi", $_POST['nombre'], $_POST['telefono'], $_POST['direccion'], $_POST['manzana'], $_POST['lote'], $_POST['email'], $_POST['id_ciudad']);
+// 2. Lógica para Guardar el Formulario (AJAX)
+document.getElementById('registroForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Evita que la página se recargue
+    
+    const mensajeDiv = document.getElementById('mensaje');
+    const formData = new FormData(this); // Captura todos los datos del formulario automáticamente
 
-    if ($stmt->execute()) {
-        echo "✅ Cliente registrado correctamente";
-    } else {
-        echo "❌ Error: " . $stmt->error;
-    }
-    }
-    $stmt->close();
-}
-?>
+    fetch('GuardarCliente.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.status === 'success') {
+            mensajeDiv.style.color = 'green';
+            mensajeDiv.innerText = "✅ " + data.message;
+            this.reset(); // Limpia el formulario tras el éxito
+        } else {
+            mensajeDiv.style.color = 'red';
+            mensajeDiv.innerText = "❌ Error: " + data.message;
+        }
+    })
+    .catch(error => {
+        mensajeDiv.style.color = 'red';
+        mensajeDiv.innerText = "❌ Error en la conexión.";
+    });
+});
+</script>

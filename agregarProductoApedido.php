@@ -28,7 +28,7 @@
         ?>
     </select><br><br>
 
-    Cantidad: <input type="number" name="cantidad" min="1" required><br><br>
+    Cantidad: <input type="number" name="cantidad" min="1" step="any" required><br><br>
 
     <button type="submit" name="guardar_detalle">Agregar al Pedido</button>
 </form>

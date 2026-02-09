@@ -71,6 +71,8 @@
     <li> <a href="producto.php" target="contenido">Productos</a></li>
 
                  <li> <a href="corrreelectronico/generadorCorreos2.php" target="contenido">correo electronico2</a></li>
+                   <li> <a href="graficas/graficaMensualPedidos.php" target="contenido">graficas</a></li>
+                    <li> <a href="graficas/graficaMensualPagos.php" target="contenido">graficas pagos</a></li>
          </ul>
      </ul>
 </nav>
