@@ -62,7 +62,7 @@ if (isset($_POST['actualizar_pedido'])) {
 $query = "SELECT p.id_pedido, p.id_cliente, p.estado, p.fecha_pedido, p.total, p.activo, c.nombre
           FROM Pedido p
           LEFT JOIN Cliente c ON p.id_cliente = c.id_cliente
-          WHERE 1=1";
+          WHERE 1=1 ";
 
 $params = [];
 $types = "";

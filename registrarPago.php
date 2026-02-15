@@ -29,7 +29,7 @@ Waifus, [11/01/2026 06:47 p. m.]
     <select name="id_pedido" id="id_pedido" required>
         <option value="">-- Selecciona Pedido --</option>
         <?php
-        $result = $conn->query("SELECT id_pedido, total, estado FROM Pedido WHERE estado <> 'Cancelado'");
+        $result = $conn->query("SELECT id_pedido, total, estado FROM Pedido WHERE estado <> 'Cancelado' ORDER BY id_pedido DESC");
         while ($row = $result->fetch_assoc()) {
             echo "<option value='{$row["id_pedido"]}' data-total='{$row["total"]}'>
                     Pedido #{$row["id_pedido"]} - Total: $ {$row["total"]} - Estado: {$row["estado"]}
