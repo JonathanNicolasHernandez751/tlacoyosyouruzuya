@@ -1,0 +1,295 @@
+/* ============================================================
+   REGISTRAR PRODUCTO - Hoja de estilos
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   Variables globales (Design tokens)
+   ------------------------------------------------------------ */
+:root {
+    --primary: #e11d48;
+    --primary-hover: #be123c;
+    --primary-soft: #ffe4e6;
+    --success: #10b981;
+    --danger: #ef4444;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --radius: 12px;
+    --shadow-card: 0 20px 40px rgba(225, 29, 72, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+    --shadow-btn: 0 6px 16px rgba(225, 29, 72, 0.35);
+    --shadow-btn-hover: 0 10px 22px rgba(225, 29, 72, 0.45);
+}
+
+/* ------------------------------------------------------------
+   Reset básico
+   ------------------------------------------------------------ */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ------------------------------------------------------------
+   Body
+   ------------------------------------------------------------ */
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #fef2f2 0%, #f8fafc 100%);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* ------------------------------------------------------------
+   Contenedor principal (tarjeta)
+   ------------------------------------------------------------ */
+.container {
+    width: 100%;
+    max-width: 680px;
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: 36px 40px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ------------------------------------------------------------
+   Encabezado
+   ------------------------------------------------------------ */
+h2 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 3px solid var(--primary-soft);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+h2::before {
+    content: "🌮";
+    font-size: 1.6rem;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
+}
+
+/* ------------------------------------------------------------
+   Mensajes de feedback (éxito / error)
+   ------------------------------------------------------------ */
+#mensaje {
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 22px;
+    font-weight: 600;
+    display: none;
+    font-size: 0.95rem;
+    animation: fadeIn 0.3s ease;
+}
+
+#mensaje.show { display: block; }
+
+#mensaje.success {
+    background: #d1fae5;
+    color: #065f46;
+    border-left: 4px solid var(--success);
+}
+
+#mensaje.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid var(--danger);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ------------------------------------------------------------
+   Grid del formulario
+   ------------------------------------------------------------ */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 22px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+/* ------------------------------------------------------------
+   Labels
+   ------------------------------------------------------------ */
+label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+/* ------------------------------------------------------------
+   Inputs y selects
+   ------------------------------------------------------------ */
+input,
+select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    font-size: 0.95rem;
+    color: var(--text);
+    background: #fafafa;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+input:hover,
+select:hover {
+    border-color: #cbd5e1;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.12);
+}
+
+/* ------------------------------------------------------------
+   Input de precio con símbolo $
+   ------------------------------------------------------------ */
+.price-wrapper {
+    position: relative;
+}
+
+.price-wrapper::before {
+    content: "$";
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary);
+    font-weight: 700;
+    pointer-events: none;
+}
+
+.price-wrapper input {
+    padding-left: 30px;
+    font-weight: 600;
+}
+
+/* Quitar flechas del input number */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* ------------------------------------------------------------
+   Texto de ayuda (hint)
+   ------------------------------------------------------------ */
+.hint {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* ------------------------------------------------------------
+   Botón de envío
+   ------------------------------------------------------------ */
+.submit-btn {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: var(--shadow-btn);
+    font-family: inherit;
+}
+
+.submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-btn-hover);
+}
+
+.submit-btn:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 3px 8px rgba(225, 29, 72, 0.3);
+}
+
+.submit-btn:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* ------------------------------------------------------------
+   Responsive
+   ------------------------------------------------------------ */
+@media (max-width: 560px) {
+    .container {
+        padding: 26px 22px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    h2 {
+        font-size: 1.35rem;
+    }
+}
+
+/* ------------------------------------------------------------
+   Modo oscuro automático (opcional)
+   ------------------------------------------------------------ */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f1f5f9;
+        --text-muted: #94a3b8;
+        --border: #334155;
+    }
+
+    body {
+        background: linear-gradient(135deg, #1e1b1b 0%, #0f172a 100%);
+    }
+
+    input,
+    select {
+        background: #0f172a;
+        color: var(--text);
+    }
+}
